@@ -1,7 +1,64 @@
 import Header from "../components/Header"
 import Sidebar from "../components/Sidebar"
+import TaskColumn from "../components/TaskColumn"
+
+const dummyTasks = [
+  {
+    id: "1",
+    title: "Brainstorming",
+    description: "Brainstorming brings team members diverse experience into play.",
+    status: "todo",
+    priority: "low",
+  },
+  {
+    id: "2",
+    title: "Research",
+    description: "User research helps you to create an optimal product for users.",
+    status: "todo",
+    priority: "high",
+  },
+  {
+    id: "3",
+    title: "Wireframes",
+    description: "Low fidelity wireframes include the most basic content and visuals.",
+    status: "todo",
+    priority: "high",
+  },
+  {
+    id: "4",
+    title: "Brainstorming",
+    description: "Brainstorming brings team members diverse experience into play.",
+    status: "inprogress",
+    priority: "low",
+  },
+  {
+    id: "5",
+    title: "Brainstorming",
+    description: "Brainstorming brings team members diverse experience into play.",
+    status: "inprogress",
+    priority: "low",
+  },
+  {
+    id: "6",
+    title: "Brainstorming",
+    description: "Brainstorming brings team members diverse experience into play.",
+    status: "done",
+    priority: "low",
+  },
+  {
+    id: "7",
+    title: "Design System",
+    description: "It just needs to adapt the UI from what you did before.",
+    status: "done",
+    priority: "low",
+  },
+]
 
 function Dashboard() {
+  const todoTasks = dummyTasks.filter((t) => t.status === "todo")
+  const inprogressTasks = dummyTasks.filter((t) => t.status === "inprogress")
+  const doneTasks = dummyTasks.filter((t) => t.status === "done")
+
   return (
     <div className="min-h-screen bg-gray-50">
 
@@ -18,8 +75,6 @@ function Dashboard() {
             <button className="w-7 h-7 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center text-sm">✏️</button>
             <button className="w-7 h-7 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center text-sm">🔗</button>
           </div>
-
-          {/* Right — Invite + Avatars */}
           <div className="flex items-center gap-3">
             <div className="flex -space-x-2">
               {["bg-purple-400", "bg-blue-400", "bg-pink-400", "bg-green-400"].map((color, i) => (
@@ -52,17 +107,11 @@ function Dashboard() {
           </div>
         </div>
 
-        {/* Task columns will go here */}
+        {/* Task Board */}
         <div className="flex gap-6">
-          <div className="bg-gray-100 rounded-xl p-4 w-80 text-center text-gray-400 text-sm">
-            To Do column coming soon...
-          </div>
-          <div className="bg-gray-100 rounded-xl p-4 w-80 text-center text-gray-400 text-sm">
-            In Progress column coming soon...
-          </div>
-          <div className="bg-gray-100 rounded-xl p-4 w-80 text-center text-gray-400 text-sm">
-            Done column coming soon...
-          </div>
+          <TaskColumn status="todo" tasks={todoTasks} />
+          <TaskColumn status="inprogress" tasks={inprogressTasks} />
+          <TaskColumn status="done" tasks={doneTasks} />
         </div>
 
       </div>
