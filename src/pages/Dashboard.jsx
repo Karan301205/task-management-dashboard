@@ -1,63 +1,14 @@
+import { useSelector } from "react-redux"
 import Header from "../components/Header"
 import Sidebar from "../components/Sidebar"
 import TaskColumn from "../components/TaskColumn"
 
-const dummyTasks = [
-  {
-    id: "1",
-    title: "Brainstorming",
-    description: "Brainstorming brings team members diverse experience into play.",
-    status: "todo",
-    priority: "low",
-  },
-  {
-    id: "2",
-    title: "Research",
-    description: "User research helps you to create an optimal product for users.",
-    status: "todo",
-    priority: "high",
-  },
-  {
-    id: "3",
-    title: "Wireframes",
-    description: "Low fidelity wireframes include the most basic content and visuals.",
-    status: "todo",
-    priority: "high",
-  },
-  {
-    id: "4",
-    title: "Brainstorming",
-    description: "Brainstorming brings team members diverse experience into play.",
-    status: "inprogress",
-    priority: "low",
-  },
-  {
-    id: "5",
-    title: "Brainstorming",
-    description: "Brainstorming brings team members diverse experience into play.",
-    status: "inprogress",
-    priority: "low",
-  },
-  {
-    id: "6",
-    title: "Brainstorming",
-    description: "Brainstorming brings team members diverse experience into play.",
-    status: "done",
-    priority: "low",
-  },
-  {
-    id: "7",
-    title: "Design System",
-    description: "It just needs to adapt the UI from what you did before.",
-    status: "done",
-    priority: "low",
-  },
-]
-
 function Dashboard() {
-  const todoTasks = dummyTasks.filter((t) => t.status === "todo")
-  const inprogressTasks = dummyTasks.filter((t) => t.status === "inprogress")
-  const doneTasks = dummyTasks.filter((t) => t.status === "done")
+  const tasks = useSelector((state) => state.tasks.tasks)
+
+  const todoTasks = tasks.filter((t) => t.status === "todo")
+  const inprogressTasks = tasks.filter((t) => t.status === "inprogress")
+  const doneTasks = tasks.filter((t) => t.status === "done")
 
   return (
     <div className="min-h-screen bg-gray-50">
