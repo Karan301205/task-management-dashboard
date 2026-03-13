@@ -33,11 +33,6 @@ function TaskColumn({ status, tasks }) {
             {tasks.length}
           </span>
         </div>
-        {status === "todo" && (
-          <button className="w-6 h-6 rounded-full bg-purple-600 text-white flex items-center justify-center text-sm hover:bg-purple-700">
-            +
-          </button>
-        )}
       </div>
 
       {/* Colored Bar */}
