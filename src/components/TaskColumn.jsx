@@ -1,3 +1,4 @@
+import { Droppable } from "react-beautiful-dnd"
 import TaskCard from "./TaskCard"
 
 const columnStyles = {
@@ -38,12 +39,22 @@ function TaskColumn({ status, tasks }) {
       {/* Colored Bar */}
       <div className={`h-1 rounded-full ${style.bar} mb-4`}></div>
 
-      {/* Task Cards */}
-      <div>
-        {tasks.map((task) => (
-          <TaskCard key={task.id} task={task} />
-        ))}
-      </div>
+      {/* Droppable Zone */}
+      <Droppable droppableId={status} isDropDisabled={false} direction="vertical">
+        {(provided, snapshot) => (
+          <div
+            ref={provided.innerRef}
+            {...provided.droppableProps}
+            className={`flex flex-col min-h-32 rounded-xl transition-colors p-1
+              ${snapshot.isDraggingOver ? "bg-purple-50" : "bg-transparent"}`}
+          >
+            {tasks.map((task, index) => (
+              <TaskCard key={task.id} task={task} index={index} />
+            ))}
+            {provided.placeholder}
+          </div>
+        )}
+      </Droppable>
 
     </div>
   )

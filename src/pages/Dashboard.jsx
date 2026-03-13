@@ -1,17 +1,36 @@
 import { useState } from "react"
-import { useSelector } from "react-redux"
+import { useSelector, useDispatch } from "react-redux"
+import { DragDropContext } from "react-beautiful-dnd"
 import Header from "../components/Header"
 import Sidebar from "../components/Sidebar"
 import TaskColumn from "../components/TaskColumn"
 import AddTaskModal from "../components/AddTaskModal"
+import { moveTask } from "../redux/taskSlice"
 
 function Dashboard() {
   const tasks = useSelector((state) => state.tasks.tasks)
+  const dispatch = useDispatch()
   const [showModal, setShowModal] = useState(false)
 
   const todoTasks = tasks.filter((t) => t.status === "todo")
   const inprogressTasks = tasks.filter((t) => t.status === "inprogress")
   const doneTasks = tasks.filter((t) => t.status === "done")
+
+  const handleDragEnd = (result) => {
+    const { destination, source, draggableId } = result
+
+    // Dropped outside any column
+    if (!destination) return
+
+    // Dropped in same position
+    if (destination.droppableId === source.droppableId) return
+
+    // Dispatch moveTask to update status in Redux
+    dispatch(moveTask({
+      taskId: draggableId,
+      newStatus: destination.droppableId,
+    }))
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -19,7 +38,6 @@ function Dashboard() {
       <Sidebar />
       <Header />
 
-      {/* Main Content */}
       <div className="ml-64 pt-16 p-8">
 
         {/* Project Title Row */}
@@ -44,8 +62,6 @@ function Dashboard() {
 
         {/* Filter Row */}
         <div className="flex items-center justify-between mb-6">
-
-          {/* Left side — Filter + Add Task */}
           <div className="flex items-center gap-3">
             <button className="flex items-center gap-2 border border-gray-300 rounded-lg px-4 py-2 text-sm text-gray-600 hover:bg-gray-100">
               ☰ Filter
@@ -53,8 +69,6 @@ function Dashboard() {
             <button className="flex items-center gap-2 border border-gray-300 rounded-lg px-4 py-2 text-sm text-gray-600 hover:bg-gray-100">
               📅 Today ▾
             </button>
-
-            {/* ADD TASK BUTTON */}
             <button
               onClick={() => setShowModal(true)}
               className="flex items-center gap-2 bg-purple-600 text-white rounded-lg px-4 py-2 text-sm hover:bg-purple-700 font-medium"
@@ -62,8 +76,6 @@ function Dashboard() {
               + Add Task
             </button>
           </div>
-
-          {/* Right side — Share + View toggles */}
           <div className="flex items-center gap-2">
             <button className="border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-500 hover:bg-gray-100">
               Share
@@ -73,12 +85,14 @@ function Dashboard() {
           </div>
         </div>
 
-        {/* Task Board */}
-        <div className="flex gap-6">
-          <TaskColumn status="todo" tasks={todoTasks} />
-          <TaskColumn status="inprogress" tasks={inprogressTasks} />
-          <TaskColumn status="done" tasks={doneTasks} />
-        </div>
+        {/* Task Board with Drag and Drop */}
+        <DragDropContext onDragEnd={handleDragEnd}>
+          <div className="flex gap-6">
+            <TaskColumn status="todo" tasks={todoTasks} />
+            <TaskColumn status="inprogress" tasks={inprogressTasks} />
+            <TaskColumn status="done" tasks={doneTasks} />
+          </div>
+        </DragDropContext>
 
       </div>
 
