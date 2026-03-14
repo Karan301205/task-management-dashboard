@@ -1,17 +1,25 @@
+import { useState } from "react"
 import { Draggable } from "react-beautiful-dnd"
+import { useDispatch } from "react-redux"
+import { deleteTask } from "../redux/taskSlice"
 
 function TaskCard({ task, index }) {
+  const dispatch = useDispatch()
+  const [showMenu, setShowMenu] = useState(false)
+  const [showConfirm, setShowConfirm] = useState(false)
+
   const priorityStyles = {
     low: "bg-orange-100 text-orange-500",
     medium: "bg-blue-100 text-blue-500",
     high: "bg-red-100 text-red-500",
   }
 
-  const avatarColors = [
-    "bg-purple-400",
-    "bg-blue-400",
-    "bg-pink-400",
-  ]
+  const avatarColors = ["bg-purple-400", "bg-blue-400", "bg-pink-400"]
+
+  const handleDelete = () => {
+    dispatch(deleteTask(task.id))
+    setShowConfirm(false)
+  }
 
   return (
     <Draggable draggableId={task.id} index={index}>
@@ -31,7 +39,30 @@ function TaskCard({ task, index }) {
             <span className={`text-xs font-semibold px-2 py-1 rounded-md ${priorityStyles[task.priority]}`}>
               {task.priority.charAt(0).toUpperCase() + task.priority.slice(1)}
             </span>
-            <button className="text-gray-400 hover:text-gray-600 text-lg leading-none">···</button>
+
+            {/* 3-dot menu */}
+            <div className="relative">
+              <button
+                onClick={() => setShowMenu(!showMenu)}
+                className="text-gray-400 hover:text-gray-600 text-lg leading-none px-1"
+              >
+                ···
+              </button>
+
+              {showMenu && (
+                <div className="absolute right-0 top-6 bg-white border border-gray-200 rounded-lg shadow-lg z-10 w-32">
+                  <button
+                    onClick={() => {
+                      setShowMenu(false)
+                      setShowConfirm(true)
+                    }}
+                    className="w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-red-50 rounded-lg"
+                  >
+                    🗑️ Delete
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Title */}
@@ -52,6 +83,38 @@ function TaskCard({ task, index }) {
               <span className="flex items-center gap-1">📄 <span>0 files</span></span>
             </div>
           </div>
+
+          {/* Delete Confirmation */}
+          {showConfirm && (
+            <>
+              <div
+                className="fixed inset-0 bg-black bg-opacity-30 z-40"
+                onClick={() => setShowConfirm(false)}
+              ></div>
+              <div className="fixed inset-0 z-50 flex items-center justify-center">
+                <div className="bg-white rounded-2xl shadow-xl p-6 w-80 mx-4">
+                  <h3 className="text-gray-800 font-bold text-base mb-2">Delete Task</h3>
+                  <p className="text-gray-500 text-sm mb-6">
+                    Are you sure you want to delete <span className="font-semibold text-gray-700">"{task.title}"</span>? This cannot be undone.
+                  </p>
+                  <div className="flex gap-3">
+                    <button
+                      onClick={() => setShowConfirm(false)}
+                      className="flex-1 border border-gray-300 text-gray-600 rounded-lg py-2 text-sm hover:bg-gray-50"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      onClick={handleDelete}
+                      className="flex-1 bg-red-500 text-white rounded-lg py-2 text-sm hover:bg-red-600"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </>
+          )}
 
         </div>
       )}

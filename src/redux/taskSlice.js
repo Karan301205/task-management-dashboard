@@ -1,58 +1,63 @@
 import { createSlice } from "@reduxjs/toolkit"
 import { v4 as uuidv4 } from "uuid"
+import { loadTasks } from "../utils/localStorage"
+
+const defaultTasks = [
+  {
+    id: uuidv4(),
+    title: "Brainstorming",
+    description: "Brainstorming brings team members diverse experience into play.",
+    status: "todo",
+    priority: "low",
+  },
+  {
+    id: uuidv4(),
+    title: "Research",
+    description: "User research helps you to create an optimal product for users.",
+    status: "todo",
+    priority: "high",
+  },
+  {
+    id: uuidv4(),
+    title: "Wireframes",
+    description: "Low fidelity wireframes include the most basic content and visuals.",
+    status: "todo",
+    priority: "high",
+  },
+  {
+    id: uuidv4(),
+    title: "Brainstorming",
+    description: "Brainstorming brings team members diverse experience into play.",
+    status: "inprogress",
+    priority: "low",
+  },
+  {
+    id: uuidv4(),
+    title: "Brainstorming",
+    description: "Brainstorming brings team members diverse experience into play.",
+    status: "inprogress",
+    priority: "low",
+  },
+  {
+    id: uuidv4(),
+    title: "Brainstorming",
+    description: "Brainstorming brings team members diverse experience into play.",
+    status: "done",
+    priority: "low",
+  },
+  {
+    id: uuidv4(),
+    title: "Design System",
+    description: "It just needs to adapt the UI from what you did before.",
+    status: "done",
+    priority: "low",
+  },
+]
+
+const savedTasks = loadTasks()
 
 const initialState = {
-  tasks: [
-    {
-      id: uuidv4(),
-      title: "Brainstorming",
-      description: "Brainstorming brings team members diverse experience into play.",
-      status: "todo",
-      priority: "low",
-    },
-    {
-      id: uuidv4(),
-      title: "Research",
-      description: "User research helps you to create an optimal product for users.",
-      status: "todo",
-      priority: "high",
-    },
-    {
-      id: uuidv4(),
-      title: "Wireframes",
-      description: "Low fidelity wireframes include the most basic content and visuals.",
-      status: "todo",
-      priority: "high",
-    },
-    {
-      id: uuidv4(),
-      title: "Brainstorming",
-      description: "Brainstorming brings team members diverse experience into play.",
-      status: "inprogress",
-      priority: "low",
-    },
-    {
-      id: uuidv4(),
-      title: "Brainstorming",
-      description: "Brainstorming brings team members diverse experience into play.",
-      status: "inprogress",
-      priority: "low",
-    },
-    {
-      id: uuidv4(),
-      title: "Brainstorming",
-      description: "Brainstorming brings team members diverse experience into play.",
-      status: "done",
-      priority: "low",
-    },
-    {
-      id: uuidv4(),
-      title: "Design System",
-      description: "It just needs to adapt the UI from what you did before.",
-      status: "done",
-      priority: "low",
-    },
-  ],
+  tasks: savedTasks ?? defaultTasks,
 }
 
 const taskSlice = createSlice({
