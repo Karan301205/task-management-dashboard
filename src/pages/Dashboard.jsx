@@ -11,26 +11,26 @@ function Dashboard() {
   const tasks = useSelector((state) => state.tasks.tasks)
   const dispatch = useDispatch()
   const [showModal, setShowModal] = useState(false)
-
-  const todoTasks = tasks.filter((t) => t.status === "todo")
-  const inprogressTasks = tasks.filter((t) => t.status === "inprogress")
-  const doneTasks = tasks.filter((t) => t.status === "done")
+  const [priorityFilter, setPriorityFilter] = useState("all")
 
   const handleDragEnd = (result) => {
     const { destination, source, draggableId } = result
-
-    // Dropped outside any column
     if (!destination) return
-
-    // Dropped in same position
     if (destination.droppableId === source.droppableId) return
-
-    // Dispatch moveTask to update status in Redux
     dispatch(moveTask({
       taskId: draggableId,
       newStatus: destination.droppableId,
     }))
   }
+
+  // Apply filter
+  const filteredTasks = priorityFilter === "all"
+    ? tasks
+    : tasks.filter((t) => t.priority === priorityFilter)
+
+  const todoTasks = filteredTasks.filter((t) => t.status === "todo")
+  const inprogressTasks = filteredTasks.filter((t) => t.status === "inprogress")
+  const doneTasks = filteredTasks.filter((t) => t.status === "done")
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -61,14 +61,8 @@ function Dashboard() {
         </div>
 
         {/* Filter Row */}
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
-            <button className="flex items-center gap-2 border border-gray-300 rounded-lg px-4 py-2 text-sm text-gray-600 hover:bg-gray-100">
-              ☰ Filter
-            </button>
-            <button className="flex items-center gap-2 border border-gray-300 rounded-lg px-4 py-2 text-sm text-gray-600 hover:bg-gray-100">
-              📅 Today ▾
-            </button>
             <button
               onClick={() => setShowModal(true)}
               className="flex items-center gap-2 bg-purple-600 text-white rounded-lg px-4 py-2 text-sm hover:bg-purple-700 font-medium"
@@ -85,7 +79,49 @@ function Dashboard() {
           </div>
         </div>
 
-        {/* Task Board with Drag and Drop */}
+        {/* Priority Filter Pills */}
+        <div className="flex items-center gap-2 mb-6">
+          <span className="text-sm text-gray-500 font-medium mr-1">Filter by priority:</span>
+
+          {["all", "low", "medium", "high"].map((level) => {
+            const styles = {
+              all: "bg-gray-200 text-gray-600",
+              low: "bg-orange-100 text-orange-500",
+              medium: "bg-blue-100 text-blue-500",
+              high: "bg-red-100 text-red-500",
+            }
+            const activeStyles = {
+              all: "bg-gray-500 text-white",
+              low: "bg-orange-400 text-white",
+              medium: "bg-blue-500 text-white",
+              high: "bg-red-500 text-white",
+            }
+            const isActive = priorityFilter === level
+
+            return (
+              <button
+                key={level}
+                onClick={() => setPriorityFilter(level)}
+                className={`px-3 py-1 rounded-full text-xs font-semibold transition-colors
+                  ${isActive ? activeStyles[level] : styles[level]}`}
+              >
+                {level.charAt(0).toUpperCase() + level.slice(1)}
+              </button>
+            )
+          })}
+
+          {/* Clear filter */}
+          {priorityFilter !== "all" && (
+            <button
+              onClick={() => setPriorityFilter("all")}
+              className="text-xs text-gray-400 hover:text-gray-600 underline ml-2"
+            >
+              Clear filter
+            </button>
+          )}
+        </div>
+
+        {/* Task Board */}
         <DragDropContext onDragEnd={handleDragEnd}>
           <div className="flex gap-6">
             <TaskColumn status="todo" tasks={todoTasks} />
