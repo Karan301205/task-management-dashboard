@@ -7,7 +7,7 @@ import TaskColumn from "../components/TaskColumn"
 import AddTaskModal from "../components/AddTaskModal"
 import { moveTask } from "../redux/taskSlice"
 import { loadFilter, saveFilter } from "../utils/localStorage"
-
+import DueDateBanner from "../components/DueDateBanner"
 function Dashboard() {
   const tasks = useSelector((state) => state.tasks.tasks)
   const dispatch = useDispatch()
@@ -47,9 +47,9 @@ function Dashboard() {
 
       <Sidebar />
       <Header />
-
-      <div className="ml-64 pt-16 p-8">
-
+      <DueDateBanner />
+      
+      <div className="ml-64 pt-20 p-8">
         {/* Project Title Row */}
         <div className="flex items-center justify-between mt-4 mb-6">
           <div className="flex items-center gap-3">

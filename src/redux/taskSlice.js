@@ -9,6 +9,7 @@ const defaultTasks = [
     description: "Brainstorming brings team members diverse experience into play.",
     status: "todo",
     priority: "low",
+    dueDate: null,
   },
   {
     id: uuidv4(),
@@ -16,6 +17,7 @@ const defaultTasks = [
     description: "User research helps you to create an optimal product for users.",
     status: "todo",
     priority: "high",
+    dueDate: null,
   },
   {
     id: uuidv4(),
@@ -23,6 +25,7 @@ const defaultTasks = [
     description: "Low fidelity wireframes include the most basic content and visuals.",
     status: "todo",
     priority: "high",
+    dueDate: null,
   },
   {
     id: uuidv4(),
@@ -30,6 +33,7 @@ const defaultTasks = [
     description: "Brainstorming brings team members diverse experience into play.",
     status: "inprogress",
     priority: "low",
+    dueDate: null,
   },
   {
     id: uuidv4(),
@@ -37,6 +41,7 @@ const defaultTasks = [
     description: "Brainstorming brings team members diverse experience into play.",
     status: "inprogress",
     priority: "low",
+    dueDate: null,
   },
   {
     id: uuidv4(),
@@ -44,6 +49,7 @@ const defaultTasks = [
     description: "Brainstorming brings team members diverse experience into play.",
     status: "done",
     priority: "low",
+    dueDate: null,
   },
   {
     id: uuidv4(),
@@ -51,6 +57,7 @@ const defaultTasks = [
     description: "It just needs to adapt the UI from what you did before.",
     status: "done",
     priority: "low",
+    dueDate: null,
   },
 ]
 
