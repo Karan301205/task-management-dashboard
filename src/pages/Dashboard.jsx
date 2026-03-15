@@ -6,12 +6,23 @@ import Sidebar from "../components/Sidebar"
 import TaskColumn from "../components/TaskColumn"
 import AddTaskModal from "../components/AddTaskModal"
 import { moveTask } from "../redux/taskSlice"
+import { loadFilter, saveFilter } from "../utils/localStorage"
 
 function Dashboard() {
   const tasks = useSelector((state) => state.tasks.tasks)
   const dispatch = useDispatch()
   const [showModal, setShowModal] = useState(false)
-  const [priorityFilter, setPriorityFilter] = useState("all")
+  const [priorityFilter, setPriorityFilter] = useState(loadFilter)
+
+  const priorityOrder = { high: 0, medium: 1, low: 2 }
+
+  const sortByPriority = (taskList) =>
+    [...taskList].sort((a, b) => priorityOrder[a.priority] - priorityOrder[b.priority])
+
+  const handleFilterChange = (level) => {
+    setPriorityFilter(level)
+    saveFilter(level)
+  }
 
   const handleDragEnd = (result) => {
     const { destination, source, draggableId } = result
@@ -23,14 +34,13 @@ function Dashboard() {
     }))
   }
 
-  // Apply filter
   const filteredTasks = priorityFilter === "all"
     ? tasks
     : tasks.filter((t) => t.priority === priorityFilter)
 
-  const todoTasks = filteredTasks.filter((t) => t.status === "todo")
-  const inprogressTasks = filteredTasks.filter((t) => t.status === "inprogress")
-  const doneTasks = filteredTasks.filter((t) => t.status === "done")
+  const todoTasks = sortByPriority(filteredTasks.filter((t) => t.status === "todo"))
+  const inprogressTasks = sortByPriority(filteredTasks.filter((t) => t.status === "inprogress"))
+  const doneTasks = sortByPriority(filteredTasks.filter((t) => t.status === "done"))
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -101,7 +111,7 @@ function Dashboard() {
             return (
               <button
                 key={level}
-                onClick={() => setPriorityFilter(level)}
+                onClick={() => handleFilterChange(level)}
                 className={`px-3 py-1 rounded-full text-xs font-semibold transition-colors
                   ${isActive ? activeStyles[level] : styles[level]}`}
               >
@@ -110,10 +120,9 @@ function Dashboard() {
             )
           })}
 
-          {/* Clear filter */}
           {priorityFilter !== "all" && (
             <button
-              onClick={() => setPriorityFilter("all")}
+              onClick={() => handleFilterChange("all")}
               className="text-xs text-gray-400 hover:text-gray-600 underline ml-2"
             >
               Clear filter
@@ -132,7 +141,6 @@ function Dashboard() {
 
       </div>
 
-      {/* Add Task Modal */}
       {showModal && (
         <AddTaskModal onClose={() => setShowModal(false)} />
       )}
