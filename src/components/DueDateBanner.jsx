@@ -77,14 +77,14 @@ function DueDateBanner({ sidebarCollapsed }) {
 
   if (alertTasks.length === 0) return null
 
-  const leftPos = sidebarCollapsed ? "left-16" : "left-64"
-
+//   const leftPos = sidebarCollapsed ? "left-16" : "left-64"
+const leftClass = "left-0 md:left-16 lg:" + (sidebarCollapsed ? "left-16" : "left-64")
   return (
-    <div className={`fixed top-16 right-0 z-20 px-4 md:px-6 pt-3 flex flex-col gap-2 transition-all duration-300 ${leftPos}`}>
-      {alertTasks.map((task) => (
-        <BannerItem key={task.id} task={task} onDismiss={handleDismiss} />
-      ))}
-    </div>
+    <div className={"fixed top-16 right-0 z-20 px-4 md:px-6 pt-3 flex flex-col gap-2 transition-all duration-300 " + leftClass}>
+    {alertTasks.map((task) => (
+      <BannerItem key={task.id} task={task} onDismiss={handleDismiss} />
+    ))}
+  </div>
   )
 }
 
