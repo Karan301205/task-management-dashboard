@@ -30,13 +30,12 @@ function TaskCard({ task, index }) {
     "upcoming": "bg-green-100 text-green-600 border border-green-200",
   }
   const dueDateLabels = {
-    "overdue": "⚠️ Overdue",
-    "due-today": "🔔 Due Today",
-    "due-tomorrow": "⏰ Due Tomorrow",
-    "upcoming": "📅",
+    "overdue": "Overdue",
+    "due-today": "Due Today",
+    "due-tomorrow": "Due Tomorrow",
+    "upcoming": "Upcoming",
   }
 
-  // Subtask calculations
   const subtasks = task.subtasks || []
   const completedCount = subtasks.filter((s) => s.completed).length
   const totalCount = subtasks.length
@@ -60,6 +59,11 @@ function TaskCard({ task, index }) {
     setShowConfirm(false)
   }
 
+  let cardBorderClass = "border-gray-100"
+  if (dueDateStatus === "overdue") cardBorderClass = "border-l-4 border-l-red-400"
+  if (dueDateStatus === "due-today") cardBorderClass = "border-l-4 border-l-orange-400"
+  if (dueDateStatus === "due-tomorrow") cardBorderClass = "border-l-4 border-l-yellow-400"
+
   return (
     <Draggable draggableId={task.id} index={index}>
       {(provided, snapshot) => (
@@ -67,16 +71,11 @@ function TaskCard({ task, index }) {
           ref={provided.innerRef}
           {...provided.draggableProps}
           {...provided.dragHandleProps}
-          className={`bg-white rounded-xl p-4 shadow-sm border mb-3 cursor-grab active:cursor-grabbing transition-shadow
-            ${snapshot.isDragging ? "shadow-lg border-purple-300 rotate-1" : "border-gray-100"}
-            ${dueDateStatus === "overdue" ? "border-l-4 border-l-red-400" : ""}
-            ${dueDateStatus === "due-today" ? "border-l-4 border-l-orange-400" : ""}
-            ${dueDateStatus === "due-tomorrow" ? "border-l-4 border-l-yellow-400" : ""}
-          `}
+          className={"bg-white rounded-xl p-4 shadow-sm border mb-3 cursor-grab active:cursor-grabbing transition-shadow " + (snapshot.isDragging ? "shadow-lg border-purple-300 rotate-1 " : "") + cardBorderClass}
         >
           {/* Priority + Menu */}
           <div className="flex items-center justify-between mb-3">
-            <span className={`text-xs font-semibold px-2 py-1 rounded-md ${priorityStyles[task.priority]}`}>
+            <span className={"text-xs font-semibold px-2 py-1 rounded-md " + priorityStyles[task.priority]}>
               {task.priority.charAt(0).toUpperCase() + task.priority.slice(1)}
             </span>
             <div className="relative">
@@ -84,7 +83,7 @@ function TaskCard({ task, index }) {
                 onClick={() => setShowMenu(!showMenu)}
                 className="text-gray-400 hover:text-gray-600 text-lg leading-none px-1"
               >
-                ···
+                ...
               </button>
               {showMenu && (
                 <div className="absolute right-0 top-6 bg-white border border-gray-200 rounded-lg shadow-lg z-10 w-32">
@@ -92,7 +91,7 @@ function TaskCard({ task, index }) {
                     onClick={() => { setShowMenu(false); setShowConfirm(true) }}
                     className="w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-red-50 rounded-lg"
                   >
-                    🗑️ Delete
+                    Delete
                   </button>
                 </div>
               )}
@@ -112,10 +111,7 @@ function TaskCard({ task, index }) {
                 const tag = availableTags.find((t) => t.id === tagId)
                 if (!tag) return null
                 return (
-                  <span
-                    key={tagId}
-                    className={`text-xs px-2 py-0.5 rounded-full font-medium ${tag.color}`}
-                  >
+                  <span key={tagId} className={"text-xs px-2 py-0.5 rounded-full font-medium " + tag.color}>
                     {tag.name}
                   </span>
                 )
@@ -125,7 +121,7 @@ function TaskCard({ task, index }) {
 
           {/* Due Date Badge */}
           {task.dueDate && (
-            <div className={`inline-flex items-center gap-1 text-xs font-medium px-2 py-1 rounded-lg mb-3 ${dueDateStyles[dueDateStatus]}`}>
+            <div className={"inline-flex items-center gap-1 text-xs font-medium px-2 py-1 rounded-lg mb-3 " + dueDateStyles[dueDateStatus]}>
               <span>{dueDateLabels[dueDateStatus]}</span>
               <span>· {formatDueDate(task.dueDate)}</span>
             </div>
@@ -136,70 +132,51 @@ function TaskCard({ task, index }) {
             <div className="mb-3">
               <div className="flex items-center justify-between mb-1">
                 <span className="text-xs text-gray-400 font-medium">Subtasks</span>
-                <span className="text-xs text-gray-500 font-semibold">
-                  {completedCount}/{totalCount}
-                </span>
+                <span className="text-xs text-gray-500 font-semibold">{completedCount}/{totalCount}</span>
               </div>
               <div className="w-full bg-gray-100 rounded-full h-1.5">
                 <div
-                  className={`h-1.5 rounded-full transition-all duration-300
-                    ${progressPercent === 100 ? "bg-green-500" : "bg-purple-500"}`}
-                  style={{ width: `${progressPercent}%` }}
+                  className={"h-1.5 rounded-full transition-all duration-300 " + (progressPercent === 100 ? "bg-green-500" : "bg-purple-500")}
+                  style={{ width: progressPercent + "%" }}
                 ></div>
               </div>
             </div>
           )}
 
-          {/* Subtasks Toggle Button */}
+          {/* Subtasks Toggle */}
           <button
             onClick={() => setShowSubtasks(!showSubtasks)}
             className="flex items-center gap-1 text-xs text-purple-500 hover:text-purple-700 font-medium mb-3"
           >
             <span>{showSubtasks ? "▼" : "▶"}</span>
-            <span>
-              {showSubtasks ? "Hide subtasks" : `Subtasks ${totalCount > 0 ? `(${totalCount})` : ""}`}
-            </span>
+            <span>{showSubtasks ? "Hide subtasks" : "Subtasks " + (totalCount > 0 ? "(" + totalCount + ")" : "")}</span>
           </button>
 
           {/* Subtasks Expanded */}
           {showSubtasks && (
             <div className="mb-3 bg-gray-50 rounded-lg p-3">
-
               {subtasks.length === 0 && (
-                <p className="text-xs text-gray-400 mb-2 text-center">
-                  No subtasks yet. Add one below!
-                </p>
+                <p className="text-xs text-gray-400 mb-2 text-center">No subtasks yet. Add one below!</p>
               )}
-
               {subtasks.map((subtask) => (
                 <div key={subtask.id} className="flex items-center gap-2 py-1 group">
                   <input
                     type="checkbox"
                     checked={subtask.completed}
-                    onChange={() =>
-                      dispatch(toggleSubtask({ taskId: task.id, subtaskId: subtask.id }))
-                    }
+                    onChange={() => dispatch(toggleSubtask({ taskId: task.id, subtaskId: subtask.id }))}
                     className="w-3.5 h-3.5 accent-purple-500 cursor-pointer flex-shrink-0"
                   />
-                  <span
-                    className={`text-xs flex-1 ${
-                      subtask.completed ? "line-through text-gray-400" : "text-gray-700"
-                    }`}
-                  >
+                  <span className={"text-xs flex-1 " + (subtask.completed ? "line-through text-gray-400" : "text-gray-700")}>
                     {subtask.title}
                   </span>
                   <button
-                    onClick={() =>
-                      dispatch(deleteSubtask({ taskId: task.id, subtaskId: subtask.id }))
-                    }
+                    onClick={() => dispatch(deleteSubtask({ taskId: task.id, subtaskId: subtask.id }))}
                     className="text-gray-300 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-opacity text-xs"
                   >
-                    ✕
+                    x
                   </button>
                 </div>
               ))}
-
-              {/* Add Subtask Input */}
               <div className="flex items-center gap-2 mt-2">
                 <input
                   type="text"
@@ -213,10 +190,9 @@ function TaskCard({ task, index }) {
                   onClick={handleAddSubtask}
                   className="bg-purple-500 text-white text-xs px-2 py-1.5 rounded-lg hover:bg-purple-600"
                 >
-                  + Add
+                  Add
                 </button>
               </div>
-
             </div>
           )}
 
@@ -224,50 +200,46 @@ function TaskCard({ task, index }) {
           <div className="flex items-center justify-between">
             <div className="flex -space-x-2">
               {avatarColors.map((color, i) => (
-                <div
-                  key={i}
-                  className={`w-6 h-6 rounded-full ${color} border-2 border-white`}
-                ></div>
+                <div key={i} className={"w-6 h-6 rounded-full border-2 border-white " + color}></div>
               ))}
             </div>
             <div className="flex items-center gap-3 text-gray-400 text-xs">
-              <span className="flex items-center gap-1">💬 <span>12 comments</span></span>
-              <span className="flex items-center gap-1">📄 <span>0 files</span></span>
+              <span>12 comments</span>
+              <span>0 files</span>
             </div>
           </div>
 
           {/* Delete Confirmation */}
           {showConfirm && (
-            <>
+            <div className="fixed inset-0 z-50 flex items-center justify-center">
               <div
-                className="fixed inset-0 bg-black bg-opacity-30 z-40"
+                className="fixed inset-0"
+                style={{ backgroundColor: "rgba(0,0,0,0.15)" }}
                 onClick={() => setShowConfirm(false)}
               ></div>
-              <div className="fixed inset-0 z-50 flex items-center justify-center">
-                <div className="bg-white rounded-2xl shadow-xl p-6 w-80 mx-4">
-                  <h3 className="text-gray-800 font-bold text-base mb-2">Delete Task</h3>
-                  <p className="text-gray-500 text-sm mb-6">
-                    Are you sure you want to delete{" "}
-                    <span className="font-semibold text-gray-700">"{task.title}"</span>?
-                    This cannot be undone.
-                  </p>
-                  <div className="flex gap-3">
-                    <button
-                      onClick={() => setShowConfirm(false)}
-                      className="flex-1 border border-gray-300 text-gray-600 rounded-lg py-2 text-sm hover:bg-gray-50"
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      onClick={handleDelete}
-                      className="flex-1 bg-red-500 text-white rounded-lg py-2 text-sm hover:bg-red-600"
-                    >
-                      Delete
-                    </button>
-                  </div>
+              <div className="bg-white rounded-2xl shadow-xl p-6 w-80 mx-4 relative z-10">
+                <h3 className="text-gray-800 font-bold text-base mb-2">Delete Task</h3>
+                <p className="text-gray-500 text-sm mb-6">
+                  Are you sure you want to delete{" "}
+                  <span className="font-semibold text-gray-700">"{task.title}"</span>?
+                  This cannot be undone.
+                </p>
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => setShowConfirm(false)}
+                    className="flex-1 border border-gray-300 text-gray-600 rounded-lg py-2 text-sm hover:bg-gray-50"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handleDelete}
+                    className="flex-1 bg-red-500 text-white rounded-lg py-2 text-sm hover:bg-red-600"
+                  >
+                    Delete
+                  </button>
                 </div>
               </div>
-            </>
+            </div>
           )}
 
         </div>
