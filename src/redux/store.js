@@ -1,6 +1,6 @@
 import { configureStore } from "@reduxjs/toolkit"
 import taskReducer from "./taskSlice"
-import { saveTasks } from "../utils/localStorage"
+import { saveTasks, saveTags } from "../utils/localStorage"
 
 export const store = configureStore({
   reducer: {
@@ -8,7 +8,8 @@ export const store = configureStore({
   },
 })
 
-// Save to localStorage whenever state changes
 store.subscribe(() => {
-  saveTasks(store.getState().tasks.tasks)
+  const state = store.getState()
+  saveTasks(state.tasks.tasks)
+  saveTags(state.tasks.tags)
 })

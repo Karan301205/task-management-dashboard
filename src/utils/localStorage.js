@@ -1,5 +1,6 @@
 const TASKS_KEY = "taskboard_tasks"
 const FILTER_KEY = "taskboard_filter"
+const TAGS_KEY = "taskboard_tags"
 
 export const loadTasks = () => {
   try {
@@ -14,7 +15,7 @@ export const saveTasks = (tasks) => {
   try {
     localStorage.setItem(TASKS_KEY, JSON.stringify(tasks))
   } catch {
-    console.error("Failed to save tasks to localStorage")
+    console.error("Failed to save tasks")
   }
 }
 
@@ -30,6 +31,23 @@ export const saveFilter = (filter) => {
   try {
     localStorage.setItem(FILTER_KEY, filter)
   } catch {
-    console.error("Failed to save filter to localStorage")
+    console.error("Failed to save filter")
+  }
+}
+
+export const loadTags = () => {
+  try {
+    const data = localStorage.getItem(TAGS_KEY)
+    return data ? JSON.parse(data) : undefined
+  } catch {
+    return undefined
+  }
+}
+
+export const saveTags = (tags) => {
+  try {
+    localStorage.setItem(TAGS_KEY, JSON.stringify(tags))
+  } catch {
+    console.error("Failed to save tags")
   }
 }

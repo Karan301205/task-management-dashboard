@@ -1,12 +1,14 @@
 import { useState } from "react"
 import { Draggable } from "react-beautiful-dnd"
-import { useDispatch } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
 import { deleteTask, addSubtask, toggleSubtask, deleteSubtask } from "../redux/taskSlice"
 import { getDueDateStatus, formatDueDate } from "../utils/dateHelpers"
 import { v4 as uuidv4 } from "uuid"
 
 function TaskCard({ task, index }) {
   const dispatch = useDispatch()
+  const availableTags = useSelector((state) => state.tasks.tags)
+
   const [showMenu, setShowMenu] = useState(false)
   const [showConfirm, setShowConfirm] = useState(false)
   const [showSubtasks, setShowSubtasks] = useState(false)
@@ -103,6 +105,24 @@ function TaskCard({ task, index }) {
           {/* Description */}
           <p className="text-gray-400 text-xs leading-relaxed mb-3">{task.description}</p>
 
+          {/* Tags */}
+          {task.tags && task.tags.length > 0 && (
+            <div className="flex flex-wrap gap-1 mb-3">
+              {task.tags.map((tagId) => {
+                const tag = availableTags.find((t) => t.id === tagId)
+                if (!tag) return null
+                return (
+                  <span
+                    key={tagId}
+                    className={`text-xs px-2 py-0.5 rounded-full font-medium ${tag.color}`}
+                  >
+                    {tag.name}
+                  </span>
+                )
+              })}
+            </div>
+          )}
+
           {/* Due Date Badge */}
           {task.dueDate && (
             <div className={`inline-flex items-center gap-1 text-xs font-medium px-2 py-1 rounded-lg mb-3 ${dueDateStyles[dueDateStatus]}`}>
@@ -136,30 +156,42 @@ function TaskCard({ task, index }) {
             className="flex items-center gap-1 text-xs text-purple-500 hover:text-purple-700 font-medium mb-3"
           >
             <span>{showSubtasks ? "▼" : "▶"}</span>
-            <span>{showSubtasks ? "Hide subtasks" : `Subtasks ${totalCount > 0 ? `(${totalCount})` : ""}`}</span>
+            <span>
+              {showSubtasks ? "Hide subtasks" : `Subtasks ${totalCount > 0 ? `(${totalCount})` : ""}`}
+            </span>
           </button>
 
           {/* Subtasks Expanded */}
           {showSubtasks && (
             <div className="mb-3 bg-gray-50 rounded-lg p-3">
 
-              {/* Subtask List */}
               {subtasks.length === 0 && (
-                <p className="text-xs text-gray-400 mb-2 text-center">No subtasks yet. Add one below!</p>
+                <p className="text-xs text-gray-400 mb-2 text-center">
+                  No subtasks yet. Add one below!
+                </p>
               )}
+
               {subtasks.map((subtask) => (
                 <div key={subtask.id} className="flex items-center gap-2 py-1 group">
                   <input
                     type="checkbox"
                     checked={subtask.completed}
-                    onChange={() => dispatch(toggleSubtask({ taskId: task.id, subtaskId: subtask.id }))}
+                    onChange={() =>
+                      dispatch(toggleSubtask({ taskId: task.id, subtaskId: subtask.id }))
+                    }
                     className="w-3.5 h-3.5 accent-purple-500 cursor-pointer flex-shrink-0"
                   />
-                  <span className={`text-xs flex-1 ${subtask.completed ? "line-through text-gray-400" : "text-gray-700"}`}>
+                  <span
+                    className={`text-xs flex-1 ${
+                      subtask.completed ? "line-through text-gray-400" : "text-gray-700"
+                    }`}
+                  >
                     {subtask.title}
                   </span>
                   <button
-                    onClick={() => dispatch(deleteSubtask({ taskId: task.id, subtaskId: subtask.id }))}
+                    onClick={() =>
+                      dispatch(deleteSubtask({ taskId: task.id, subtaskId: subtask.id }))
+                    }
                     className="text-gray-300 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-opacity text-xs"
                   >
                     ✕
@@ -192,7 +224,10 @@ function TaskCard({ task, index }) {
           <div className="flex items-center justify-between">
             <div className="flex -space-x-2">
               {avatarColors.map((color, i) => (
-                <div key={i} className={`w-6 h-6 rounded-full ${color} border-2 border-white`}></div>
+                <div
+                  key={i}
+                  className={`w-6 h-6 rounded-full ${color} border-2 border-white`}
+                ></div>
               ))}
             </div>
             <div className="flex items-center gap-3 text-gray-400 text-xs">
@@ -204,16 +239,31 @@ function TaskCard({ task, index }) {
           {/* Delete Confirmation */}
           {showConfirm && (
             <>
-              <div className="fixed inset-0 bg-black bg-opacity-30 z-40" onClick={() => setShowConfirm(false)}></div>
+              <div
+                className="fixed inset-0 bg-black bg-opacity-30 z-40"
+                onClick={() => setShowConfirm(false)}
+              ></div>
               <div className="fixed inset-0 z-50 flex items-center justify-center">
                 <div className="bg-white rounded-2xl shadow-xl p-6 w-80 mx-4">
                   <h3 className="text-gray-800 font-bold text-base mb-2">Delete Task</h3>
                   <p className="text-gray-500 text-sm mb-6">
-                    Are you sure you want to delete <span className="font-semibold text-gray-700">"{task.title}"</span>? This cannot be undone.
+                    Are you sure you want to delete{" "}
+                    <span className="font-semibold text-gray-700">"{task.title}"</span>?
+                    This cannot be undone.
                   </p>
                   <div className="flex gap-3">
-                    <button onClick={() => setShowConfirm(false)} className="flex-1 border border-gray-300 text-gray-600 rounded-lg py-2 text-sm hover:bg-gray-50">Cancel</button>
-                    <button onClick={handleDelete} className="flex-1 bg-red-500 text-white rounded-lg py-2 text-sm hover:bg-red-600">Delete</button>
+                    <button
+                      onClick={() => setShowConfirm(false)}
+                      className="flex-1 border border-gray-300 text-gray-600 rounded-lg py-2 text-sm hover:bg-gray-50"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      onClick={handleDelete}
+                      className="flex-1 bg-red-500 text-white rounded-lg py-2 text-sm hover:bg-red-600"
+                    >
+                      Delete
+                    </button>
                   </div>
                 </div>
               </div>

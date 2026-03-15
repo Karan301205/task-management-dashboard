@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit"
 import { v4 as uuidv4 } from "uuid"
-import { loadTasks } from "../utils/localStorage"
+import { loadTasks, loadTags } from "../utils/localStorage"
 
 const defaultTasks = [
   {
@@ -11,6 +11,7 @@ const defaultTasks = [
     priority: "low",
     dueDate: null,
     subtasks: [],
+    tags: [],
   },
   {
     id: uuidv4(),
@@ -20,6 +21,7 @@ const defaultTasks = [
     priority: "high",
     dueDate: null,
     subtasks: [],
+    tags: [],
   },
   {
     id: uuidv4(),
@@ -29,6 +31,7 @@ const defaultTasks = [
     priority: "high",
     dueDate: null,
     subtasks: [],
+    tags: [],
   },
   {
     id: uuidv4(),
@@ -38,6 +41,7 @@ const defaultTasks = [
     priority: "low",
     dueDate: null,
     subtasks: [],
+    tags: [],
   },
   {
     id: uuidv4(),
@@ -47,6 +51,7 @@ const defaultTasks = [
     priority: "low",
     dueDate: null,
     subtasks: [],
+    tags: [],
   },
   {
     id: uuidv4(),
@@ -56,6 +61,7 @@ const defaultTasks = [
     priority: "low",
     dueDate: null,
     subtasks: [],
+    tags: [],
   },
   {
     id: uuidv4(),
@@ -65,13 +71,24 @@ const defaultTasks = [
     priority: "low",
     dueDate: null,
     subtasks: [],
+    tags: [],
   },
 ]
 
+const defaultTags = [
+  { id: uuidv4(), name: "Frontend", color: "bg-blue-100 text-blue-600" },
+  { id: uuidv4(), name: "Backend", color: "bg-green-100 text-green-600" },
+  { id: uuidv4(), name: "Design", color: "bg-pink-100 text-pink-600" },
+  { id: uuidv4(), name: "Bug Fix", color: "bg-red-100 text-red-600" },
+  { id: uuidv4(), name: "Research", color: "bg-purple-100 text-purple-600" },
+]
+
 const savedTasks = loadTasks()
+const savedTags = loadTags()
 
 const initialState = {
   tasks: savedTasks ?? defaultTasks,
+  tags: savedTags ?? defaultTags,
 }
 
 const taskSlice = createSlice({
@@ -93,8 +110,6 @@ const taskSlice = createSlice({
       const task = state.tasks.find((t) => t.id === taskId)
       if (task) task.status = newStatus
     },
-
-    // Subtask actions
     addSubtask: (state, action) => {
       const { taskId, subtask } = action.payload
       const task = state.tasks.find((t) => t.id === taskId)
@@ -118,12 +133,25 @@ const taskSlice = createSlice({
         task.subtasks = task.subtasks.filter((s) => s.id !== subtaskId)
       }
     },
+
+    // Tag actions
+    addTag: (state, action) => {
+      state.tags.push(action.payload)
+    },
+    deleteTag: (state, action) => {
+      state.tags = state.tags.filter((tag) => tag.id !== action.payload)
+      // Remove tag from all tasks
+      state.tasks.forEach((task) => {
+        task.tags = (task.tags || []).filter((id) => id !== action.payload)
+      })
+    },
   },
 })
 
 export const {
   addTask, deleteTask, updateTask, moveTask,
   addSubtask, toggleSubtask, deleteSubtask,
+  addTag, deleteTag,
 } = taskSlice.actions
 
 export default taskSlice.reducer
