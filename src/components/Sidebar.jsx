@@ -31,45 +31,32 @@ function Sidebar({ collapsed, onToggle, mobileOpen, onMobileClose }) {
             <span className="text-gray-800 font-bold text-lg">Project M.</span>
           </div>
         )}
-        {/* Desktop collapse toggle */}
-        <button
-          onClick={onToggle}
-          className="hidden md:block text-gray-400 hover:text-gray-600 text-sm ml-1 flex-shrink-0"
-        >
+        <button onClick={onToggle} className="hidden md:block text-gray-400 hover:text-gray-600 text-sm ml-1 flex-shrink-0">
           {collapsed ? ">>" : "<<"}
         </button>
-        {/* Mobile close button */}
-        <button
-          onClick={onMobileClose}
-          className="md:hidden text-gray-400 hover:text-gray-600 text-lg ml-1"
-        >
+        <button onClick={onMobileClose} className="md:hidden text-gray-400 hover:text-gray-600 text-lg ml-1">
           x
         </button>
       </div>
 
       {/* Navigation */}
       <nav className="flex flex-col gap-1">
-        {navItems.map((item) => (
-          
-            key={item.label}
-            href="#"
-            onClick={onMobileClose}
-            className={"flex items-center gap-3 px-3 py-2 rounded-lg text-gray-500 hover:bg-gray-100 text-sm " + (collapsed ? "justify-center" : "")}
-            title={item.label}
-          >
-            <span className="text-base flex-shrink-0">{item.icon}</span>
-            {!collapsed && <span>{item.label}</span>}
-          </a>
-        ))}
+        {navItems.map((item) => {
+          const linkClass = "flex items-center gap-3 px-3 py-2 rounded-lg text-gray-500 hover:bg-gray-100 text-sm " + (collapsed ? "justify-center" : "")
+          return (
+            <a key={item.label} href="#" onClick={onMobileClose} className={linkClass} title={item.label}>
+              <span className="text-base flex-shrink-0">{item.icon}</span>
+              {!collapsed && <span>{item.label}</span>}
+            </a>
+          )
+        })}
       </nav>
 
       {/* My Projects */}
       {!collapsed && (
         <div className="mt-6">
           <div className="flex items-center justify-between px-2 mb-3">
-            <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
-              My Projects
-            </span>
+            <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">My Projects</span>
             <button className="text-gray-400 hover:text-gray-600 text-lg leading-none">+</button>
           </div>
           <div className="flex flex-col gap-1">
@@ -93,11 +80,7 @@ function Sidebar({ collapsed, onToggle, mobileOpen, onMobileClose }) {
       {collapsed && (
         <div className="mt-6 flex flex-col gap-3 items-center">
           {projects.map((project) => (
-            <span
-              key={project.label}
-              className={"w-2.5 h-2.5 rounded-full " + project.color}
-              title={project.label}
-            ></span>
+            <span key={project.label} className={"w-2.5 h-2.5 rounded-full " + project.color} title={project.label}></span>
           ))}
         </div>
       )}
@@ -120,7 +103,7 @@ function Sidebar({ collapsed, onToggle, mobileOpen, onMobileClose }) {
   )
 
   return (
-    <>
+    <div>
       {/* MOBILE OVERLAY BACKDROP */}
       {mobileOpen && (
         <div
@@ -130,11 +113,10 @@ function Sidebar({ collapsed, onToggle, mobileOpen, onMobileClose }) {
         ></div>
       )}
 
-      {/* MOBILE SIDEBAR — slides in as overlay */}
-      <div className={
-        "fixed top-0 left-0 h-screen w-64 bg-white border-r border-gray-200 px-4 py-6 z-40 transition-transform duration-300 md:hidden " +
-        (mobileOpen ? "translate-x-0" : "-translate-x-full")
-      }>
+      {/* MOBILE SIDEBAR */}
+      <div
+        className={"fixed top-0 left-0 h-screen w-64 bg-white border-r border-gray-200 px-4 py-6 z-40 transition-transform duration-300 md:hidden " + (mobileOpen ? "translate-x-0" : "-translate-x-full")}
+      >
         {sidebarContent}
       </div>
 
@@ -148,36 +130,26 @@ function Sidebar({ collapsed, onToggle, mobileOpen, onMobileClose }) {
           </div>
           <nav className="flex flex-col gap-1">
             {navItems.map((item) => (
-              
-                key={item.label}
-                href="#"
-                className="flex items-center justify-center px-3 py-2 rounded-lg text-gray-500 hover:bg-gray-100 text-sm"
-                title={item.label}
-              >
+              <a key={item.label} href="#" className="flex items-center justify-center px-3 py-2 rounded-lg text-gray-500 hover:bg-gray-100 text-sm" title={item.label}>
                 <span className="text-base">{item.icon}</span>
               </a>
             ))}
           </nav>
           <div className="mt-6 flex flex-col gap-3 items-center">
             {projects.map((project) => (
-              <span
-                key={project.label}
-                className={"w-2.5 h-2.5 rounded-full " + project.color}
-                title={project.label}
-              ></span>
+              <span key={project.label} className={"w-2.5 h-2.5 rounded-full " + project.color} title={project.label}></span>
             ))}
           </div>
         </div>
       </div>
 
-      {/* DESKTOP SIDEBAR — full or collapsed */}
-      <div className={
-        "hidden lg:flex fixed top-0 left-0 h-screen bg-white border-r border-gray-200 flex-col py-6 z-30 transition-all duration-300 " +
-        (collapsed ? "w-16 px-2" : "w-64 px-4")
-      }>
+      {/* DESKTOP SIDEBAR */}
+      <div
+        className={"hidden lg:flex fixed top-0 left-0 h-screen bg-white border-r border-gray-200 flex-col py-6 z-30 transition-all duration-300 " + (collapsed ? "w-16 px-2" : "w-64 px-4")}
+      >
         {sidebarContent}
       </div>
-    </>
+    </div>
   )
 }
 
