@@ -10,6 +10,7 @@ const defaultTasks = [
     status: "todo",
     priority: "low",
     dueDate: null,
+    subtasks: [],
   },
   {
     id: uuidv4(),
@@ -18,6 +19,7 @@ const defaultTasks = [
     status: "todo",
     priority: "high",
     dueDate: null,
+    subtasks: [],
   },
   {
     id: uuidv4(),
@@ -26,6 +28,7 @@ const defaultTasks = [
     status: "todo",
     priority: "high",
     dueDate: null,
+    subtasks: [],
   },
   {
     id: uuidv4(),
@@ -34,6 +37,7 @@ const defaultTasks = [
     status: "inprogress",
     priority: "low",
     dueDate: null,
+    subtasks: [],
   },
   {
     id: uuidv4(),
@@ -42,6 +46,7 @@ const defaultTasks = [
     status: "inprogress",
     priority: "low",
     dueDate: null,
+    subtasks: [],
   },
   {
     id: uuidv4(),
@@ -50,6 +55,7 @@ const defaultTasks = [
     status: "done",
     priority: "low",
     dueDate: null,
+    subtasks: [],
   },
   {
     id: uuidv4(),
@@ -58,6 +64,7 @@ const defaultTasks = [
     status: "done",
     priority: "low",
     dueDate: null,
+    subtasks: [],
   },
 ]
 
@@ -79,19 +86,44 @@ const taskSlice = createSlice({
     },
     updateTask: (state, action) => {
       const index = state.tasks.findIndex((task) => task.id === action.payload.id)
-      if (index !== -1) {
-        state.tasks[index] = action.payload
-      }
+      if (index !== -1) state.tasks[index] = action.payload
     },
     moveTask: (state, action) => {
       const { taskId, newStatus } = action.payload
       const task = state.tasks.find((t) => t.id === taskId)
+      if (task) task.status = newStatus
+    },
+
+    // Subtask actions
+    addSubtask: (state, action) => {
+      const { taskId, subtask } = action.payload
+      const task = state.tasks.find((t) => t.id === taskId)
       if (task) {
-        task.status = newStatus
+        if (!task.subtasks) task.subtasks = []
+        task.subtasks.push(subtask)
+      }
+    },
+    toggleSubtask: (state, action) => {
+      const { taskId, subtaskId } = action.payload
+      const task = state.tasks.find((t) => t.id === taskId)
+      if (task) {
+        const subtask = task.subtasks.find((s) => s.id === subtaskId)
+        if (subtask) subtask.completed = !subtask.completed
+      }
+    },
+    deleteSubtask: (state, action) => {
+      const { taskId, subtaskId } = action.payload
+      const task = state.tasks.find((t) => t.id === taskId)
+      if (task) {
+        task.subtasks = task.subtasks.filter((s) => s.id !== subtaskId)
       }
     },
   },
 })
 
-export const { addTask, deleteTask, updateTask, moveTask } = taskSlice.actions
+export const {
+  addTask, deleteTask, updateTask, moveTask,
+  addSubtask, toggleSubtask, deleteSubtask,
+} = taskSlice.actions
+
 export default taskSlice.reducer
